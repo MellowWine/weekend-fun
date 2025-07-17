@@ -58,7 +58,7 @@ header h1 {
 }
 
 /* --- 抽卡按钮样式 --- */
-button {
+#draw-button {
   background-color: #007aff;
   color: white;
   border: none;
@@ -71,18 +71,18 @@ button {
   box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
 }
 
-button:hover {
+#draw-button:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
 }
 
-button:active {
+#draw-button:active {
   transform: translateY(-1px);
   box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
 }
 
 /* 按钮禁用时的样式 */
-button:disabled {
+#draw-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
   transform: translateY(0);
@@ -109,7 +109,7 @@ footer {
   font-size: 0.8em;
   color: #aaa;
 }
-/* style.css 中新增的样式 */
+/* --- 历史记录样式 --- */
 .history-section {
     margin-top: 40px;
     text-align: left;
@@ -134,4 +134,34 @@ footer {
     margin-top: 8px;
     font-size: 0.9em;
     color: #555;
+}
+
+/* --- 新增：清空按钮的样式 --- */
+.history-controls {
+    text-align: right;
+    margin-top: 10px;
+}
+
+#clear-history-button {
+    background-color: transparent;
+    color: #dc3545; /* 危险操作使用红色 */
+    border: 1px solid #dc3545;
+    padding: 6px 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#clear-history-button:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+#clear-history-button:disabled {
+    color: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    background-color: transparent;
 }

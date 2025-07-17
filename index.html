@@ -25,14 +25,16 @@
         <!-- 这是抽卡按钮 -->
         <button id="draw-button">开始抽取</button>
         
-       <!-- index.html 中新增的部分 -->
-
         <section class="history-section">
             <h2>你的抽卡历史</h2>
             <ul id="history-list">
                 <!-- 历史记录会通过JS动态加载到这里 -->
                 <li>加载中...</li>
             </ul>
+            <!-- 新增：清空历史记录的控制区域 -->
+            <div class="history-controls">
+                <button id="clear-history-button" disabled>清空记录</button>
+            </div>
         </section>
 
         <footer>
@@ -40,7 +42,6 @@
         </footer>
     </div>
 
-   
     <script src="script.js"></script>
 </body>
 </html>
