@@ -12,8 +12,16 @@
     <div class="main-container">
         <header>
             <h1>周末去哪儿？</h1>
-            <p class="subtitle">点击下方按钮，抽取你的周末专属活动！</p>
+            <p class="subtitle">选择一个分类，抽取你的周末专属活动！</p> <!-- 修改了提示语 -->
         </header>
+
+        <!-- 新增：活动分类选择器 -->
+        <div class="category-selector">
+            <button class="category-button active" data-category="all">全部</button>
+            <button class="category-button" data-category="outdoor">户外活动</button>
+            <button class="category-button" data-category="indoor">室内休闲</button>
+            <button class="category-button" data-category="challenge">技能挑战</button>
+        </div>
 
         <div class="card-container">
             <!-- 这是显示抽卡结果的卡片 -->
@@ -31,14 +39,13 @@
                 <!-- 历史记录会通过JS动态加载到这里 -->
                 <li>加载中...</li>
             </ul>
-            <!-- 新增：清空历史记录的控制区域 -->
             <div class="history-controls">
                 <button id="clear-history-button" disabled>清空记录</button>
             </div>
         </section>
 
         <footer>
-            <p>Made with ❤️Mellow Wine❤️for a wonderful weekend.</p>
+            <p>Made with ❤️ for a wonderful weekend.</p>
         </footer>
     </div>
 
