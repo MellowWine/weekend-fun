@@ -1,0 +1,4 @@
+node_modules/
+weekend_fun.db
+npm-debug.log*
+.DS_Store
