@@ -4,19 +4,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const drawButton = document.getElementById('draw-button');
     const historyList = document.getElementById('history-list'); 
     const clearHistoryButton = document.getElementById('clear-history-button');
-    // 新增：获取所有分类按钮
     const categoryButtons = document.querySelectorAll('.category-button');
+    // 新增：获取“不喜欢”按钮
+    const redrawButton = document.getElementById('redraw-button');
 
-    // --- 用户识别 (无变化) ---
     let userId = localStorage.getItem('weekendFunUserId');
     if (!userId) {
         userId = 'user_' + Date.now() + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('weekendFunUserId', userId);
     }
-    console.log("当前用户ID:", userId);
 
-    // --- 核心改动：修改卡池的数据结构 ---
-    // 从字符串数组变为对象数组，每个对象包含活动文本和分类
     const cardPool = [
         { text: "去一个没去过的公园，享受阳光和草地。", category: "outdoor" },
         { text: "找一家评分高的独立咖啡馆，安静地读一本书。", category: "indoor" },
@@ -35,61 +32,116 @@ document.addEventListener('DOMContentLoaded', () => {
         { text: "玩一次密室逃脱或剧本杀。", category: "challenge" }
     ];
 
-    // 新增：用于存储当前选中的分类，默认为'all'
     let currentCategory = 'all';
+    // 新增：用于暂存上一次抽到的、但还未“确认”的结果
+    let lastDrawnActivity = null;
 
-    // --- 核心改动：修改抽卡函数以支持分类 ---
+    /**
+     * 核心逻辑：处理用户开始一次全新的抽卡
+     */
     function drawCard() {
-        // 1. 根据当前分类筛选卡池
-        const filteredPool = currentCategory === 'all' 
-            ? cardPool 
-            : cardPool.filter(item => item.category === currentCategory);
-
-        // 2. 检查筛选后的卡池是否为空
-        if (filteredPool.length === 0) {
-            resultCard.querySelector('p').textContent = '这个分类下没有活动哦！';
-            return; // 提前结束函数
+        // 关键：如果存在上一次抽到但未重抽的结果，说明用户“接受”了它，此时才保存
+        if (lastDrawnActivity) {
+            saveDrawRecord(lastDrawnActivity.text);
+            lastDrawnActivity = null; // 清空暂存
         }
-
+        
+        // 重置UI状态
+        redrawButton.classList.add('hidden');
         drawButton.disabled = true;
         resultCard.classList.add('flipping');
         resultCard.querySelector('p').textContent = '洗牌中...';
 
         setTimeout(() => {
-            // 3. 从筛选后的卡池中随机抽取
+            const filteredPool = currentCategory === 'all' 
+                ? cardPool 
+                : cardPool.filter(item => item.category === currentCategory);
+
+            if (filteredPool.length === 0) {
+                resultCard.querySelector('p').textContent = '这个分类下没有活动哦！';
+                drawButton.disabled = false;
+                resultCard.classList.remove('flipping');
+                return;
+            }
+
             const randomIndex = Math.floor(Math.random() * filteredPool.length);
             const randomActivity = filteredPool[randomIndex];
             
-            // 4. 显示和保存活动文本
             resultCard.querySelector('p').textContent = randomActivity.text;
-            saveDrawRecord(randomActivity.text);
+            
+            // 暂存结果，但不立即保存到历史记录
+            lastDrawnActivity = randomActivity;
 
-        }, 300);
+            // 显示“不喜欢”按钮，并重新启用主按钮
+            redrawButton.classList.remove('hidden');
+            drawButton.disabled = false;
+            resultCard.classList.remove('flipping');
+        }, 600);
+    }
+    
+    /**
+     * 核心逻辑：处理用户点击“不喜欢，换一个”
+     */
+    function redrawCard() {
+        if (!lastDrawnActivity) return; // 安全检查
+
+        // 禁用所有按钮，防止连续点击
+        drawButton.disabled = true;
+        redrawButton.classList.add('hidden'); // 隐藏不喜欢按钮，因为重抽机会只有一次
+        resultCard.classList.add('flipping');
+        resultCard.querySelector('p').textContent = '换牌中...';
 
         setTimeout(() => {
+            // 关键：创建一个排除了上一次结果的新卡池
+            const poolWithoutLast = cardPool.filter(item => item.text !== lastDrawnActivity.text);
+            
+            const filteredPool = currentCategory === 'all'
+                ? poolWithoutLast
+                : poolWithoutLast.filter(item => item.category === currentCategory);
+
+            let newActivity;
+            if (filteredPool.length > 0) {
+                const randomIndex = Math.floor(Math.random() * filteredPool.length);
+                newActivity = filteredPool[randomIndex];
+            } else {
+                // 如果过滤后没得选了，就提示用户
+                newActivity = { text: "运气爆棚！这个分类下没有其他活动可选啦！", category: 'special' };
+            }
+            
+            resultCard.querySelector('p').textContent = newActivity.text;
+
+            // 关键：重抽的结果被视为最终结果，立即保存
+            saveDrawRecord(newActivity.text);
+
+            // 重置状态
+            lastDrawnActivity = null;
+            drawButton.disabled = false; // 重新启用主按钮
             resultCard.classList.remove('flipping');
-            drawButton.disabled = false;
         }, 600);
     }
 
-    // --- 新增：处理分类按钮点击的逻辑 ---
+    /**
+     * 核心逻辑：当用户切换分类时，视为接受了上一个结果
+     */
     function handleCategorySelect(event) {
-        // 获取点击按钮的数据属性
+        // 如果存在未处理的结果，先保存它
+        if (lastDrawnActivity) {
+            saveDrawRecord(lastDrawnActivity.text);
+            lastDrawnActivity = null;
+            redrawButton.classList.add('hidden');
+        }
+
         const selectedCategory = event.target.dataset.category;
         currentCategory = selectedCategory;
 
-        // 更新按钮的激活状态
         categoryButtons.forEach(button => {
             button.classList.remove('active');
         });
         event.target.classList.add('active');
-
-        console.log("当前选择的分类:", currentCategory);
     }
 
-    // --- 以下函数保持不变 ---
-
     async function saveDrawRecord(activity) {
+        if (!activity) return; // 避免保存空记录
         try {
             const response = await fetch('/api/draw', {
                 method: 'POST',
@@ -107,12 +159,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadHistory() {
+        // (此函数无变化)
         try {
             const response = await fetch(`/api/history/${userId}`);
             const historyData = await response.json();
-            
             historyList.innerHTML = ''; 
-            
             if (historyData.length > 0) {
                 historyData.forEach(item => {
                     const li = document.createElement('li');
@@ -133,16 +184,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function clearHistory() {
+        // (此函数无变化)
         if (!confirm("你确定要清空所有抽卡记录吗？此操作不可撤销。")) {
             return;
         }
-        
         try {
-            const response = await fetch(`/api/history/${userId}`, {
-                method: 'DELETE',
-            });
+            const response = await fetch(`/api/history/${userId}`, { method: 'DELETE' });
             const result = await response.json();
-
             if (result.success) {
                 console.log("历史记录已清空!");
                 loadHistory(); 
@@ -157,12 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 绑定事件 ---
     drawButton.addEventListener('click', drawCard);
+    redrawButton.addEventListener('click', redrawCard); // 新增
     clearHistoryButton.addEventListener('click', clearHistory);
-    // 新增：为每个分类按钮绑定点击事件
     categoryButtons.forEach(button => {
         button.addEventListener('click', handleCategorySelect);
     });
 
-    // 页面加载时，立即加载一次历史记录
     loadHistory();
 });

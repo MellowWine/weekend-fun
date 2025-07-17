@@ -12,10 +12,9 @@
     <div class="main-container">
         <header>
             <h1>周末去哪儿？</h1>
-            <p class="subtitle">选择一个分类，抽取你的周末专属活动！</p> <!-- 修改了提示语 -->
+            <p class="subtitle">选择一个分类，抽取你的周末专属活动！</p>
         </header>
 
-        <!-- 新增：活动分类选择器 -->
         <div class="category-selector">
             <button class="category-button active" data-category="all">全部</button>
             <button class="category-button" data-category="outdoor">户外活动</button>
@@ -24,19 +23,21 @@
         </div>
 
         <div class="card-container">
-            <!-- 这是显示抽卡结果的卡片 -->
             <div id="result-card" class="card">
                 <p>准备好了吗？</p>
             </div>
         </div>
         
-        <!-- 这是抽卡按钮 -->
-        <button id="draw-button">开始抽取</button>
+        <!-- 新增：将两个按钮包裹在容器中 -->
+        <div class="button-group">
+            <button id="draw-button">开始抽取</button>
+            <!-- 新增：不喜欢按钮，默认隐藏 -->
+            <button id="redraw-button" class="hidden">不喜欢，换一个</button>
+        </div>
         
         <section class="history-section">
             <h2>你的抽卡历史</h2>
             <ul id="history-list">
-                <!-- 历史记录会通过JS动态加载到这里 -->
                 <li>加载中...</li>
             </ul>
             <div class="history-controls">

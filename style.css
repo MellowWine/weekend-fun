@@ -1,4 +1,4 @@
-/* --- 全局和基础样式 (无变化) --- */
+/* --- 全局和基础样式 --- */
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei",
     Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -33,7 +33,7 @@ header h1 {
   margin-top: 0;
 }
 
-/* --- 新增：分类选择器样式 --- */
+/* --- 分类选择器样式 --- */
 .category-selector {
     display: flex;
     justify-content: center;
@@ -58,7 +58,7 @@ header h1 {
     border-color: #ccc;
 }
 
-/* 选中状态的按钮样式 */
+/* 选中状态的分类按钮样式 */
 .category-button.active {
     background-color: #007aff;
     color: white;
@@ -67,9 +67,9 @@ header h1 {
 }
 
 
-/* --- 卡片区域样式 (无变化) --- */
+/* --- 卡片区域样式 --- */
 .card-container {
-  perspective: 1000px;
+  perspective: 1000px; /* 为3D翻转效果创建透视 */
   margin: 30px 0;
 }
 
@@ -83,15 +83,23 @@ header h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5em;
+  font-size: 1.5em; /* 增大字体让结果更突出 */
   font-weight: bold;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
   transition: transform 0.6s;
-  transform-style: preserve-3d;
+  transform-style: preserve-3d; /* 保持3D变换效果 */
 }
 
-/* --- 主要按钮样式 (无变化) --- */
+/* --- 主要按钮样式 --- */
+/* 按钮组容器样式 */
+.button-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px; /* 按钮之间的间距 */
+}
+
 #draw-button {
   background-color: #007aff;
   color: white;
@@ -99,7 +107,7 @@ header h1 {
   padding: 15px 30px;
   font-size: 1.1em;
   font-weight: bold;
-  border-radius: 50px;
+  border-radius: 50px; /* 圆角按钮更友好 */
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
@@ -115,6 +123,7 @@ header h1 {
   box-shadow: 0 2px 10px rgba(0, 122, 255, 0.3);
 }
 
+/* 按钮禁用时的样式 */
 #draw-button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
@@ -122,7 +131,24 @@ header h1 {
   box-shadow: none;
 }
 
-/* --- 动画和页脚等其他样式 (无变化) --- */
+/* “不喜欢”按钮的样式 */
+#redraw-button {
+    background-color: #f8f9fa;
+    color: #007aff;
+    border: 2px solid #007aff;
+    padding: 10px 20px;
+    font-size: 0.9em;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#redraw-button:hover {
+    background-color: #e9ecef;
+}
+
+/* --- 动画效果 --- */
 .card.flipping {
   animation: flip 0.6s ease-in-out;
 }
@@ -136,12 +162,14 @@ header h1 {
   }
 }
 
+/* --- 页脚样式 --- */
 footer {
   margin-top: 30px;
   font-size: 0.8em;
   color: #aaa;
 }
 
+/* --- 历史记录样式 --- */
 .history-section {
     margin-top: 40px;
     text-align: left;
@@ -175,7 +203,7 @@ footer {
 
 #clear-history-button {
     background-color: transparent;
-    color: #dc3545;
+    color: #dc3545; /* 危险操作使用红色 */
     border: 1px solid #dc3545;
     padding: 6px 12px;
     font-size: 0.8em;
@@ -195,4 +223,10 @@ footer {
     border-color: #ccc;
     cursor: not-allowed;
     background-color: transparent;
+}
+
+/* --- 通用工具类 --- */
+/* 通用的隐藏类 */
+.hidden {
+    display: none !important;
 }
